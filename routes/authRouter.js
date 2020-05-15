@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 
-router.use('/login', async function (req, res, next) {
+router.post('/login', async function (req, res, next) {
   // TODO : routing
   // id, pw -> {result : 'success', data : '~' }
   // id, pw -> {result : 'fail', data : '~' }
@@ -12,11 +12,15 @@ router.use('/login', async function (req, res, next) {
   if (!user) {
     res.json({result: 'fail', data: `no such user ${id}`});
   } else {
-    res.json({result: 'success', data: `${id}`});
+    if (user.password === pw) {
+      res.json({result: 'success', data: `${id}`});
+    } else {
+      res.json({result: 'fail', data: `wrong password for user ${id}`});
+    }
   }
 });
 
-router.use('/signup', async function (req, res, next) {
+router.post('/signup', async function (req, res, next) {
   // id, pw -> {result : 'success', data : '~' }
   // id, pw -> {result : 'error', data : '~' }
   const {username = '', id = '', pw = ''} = req.body;
