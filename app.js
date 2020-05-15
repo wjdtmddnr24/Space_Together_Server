@@ -5,14 +5,10 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
+const mongoose = require('mongoose');
+const router = require('./routes');
 
 const app = express();
-
-// mongoose connect
-const mongoose = require('mongoose');
 
 const db = mongoose.connection;
 db.on('error', console.error);
@@ -24,6 +20,7 @@ mongoose.connect('mongodb://odyssey:odyssey2020!@115.68.221.40:27017', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false,
+  useCreateIndex: true,
 });
 
 // view engine setup
@@ -32,12 +29,11 @@ app.set('view engine', 'ejs');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use(router);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -52,7 +48,7 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.json({error: err.mesage});
 });
 
 module.exports = app;
