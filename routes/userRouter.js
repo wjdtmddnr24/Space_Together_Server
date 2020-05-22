@@ -3,6 +3,13 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 
+router.post('/all', function (req, res, next) {
+  const {userIds = []} = req.body;
+  User.find({_id: {$in: userIds}}).then((users) => {
+    res.json({result: 'success', data: users});
+  });
+});
+
 router.post('/:id', function (req, res, next) {
   const {id} = req.params;
   User.findOne(
