@@ -5,23 +5,27 @@ const User = require('../models/User');
 
 router.post('/accept/:id', function (req, res, next) {
   const target_id = req.params.id;
-  const source_id = req.body.token;
+  const source_id = req.query.token;
 
   Promise.all([
-    User.findOne({user_id: target_id}).exec(),
-    User.findOne({user_id: source_id}).exec(),
+    User.findOne({userId: target_id}).exec(),
+    User.findOne({userId: source_id}).exec(),
   ]).then(([target_user, source_user]) => {
     if (!target_user || !source_user) {
       next(new Error(`${target_id} or ${source_id} is not valid`));
       return;
     }
 
-    if (source_user.friends.includes(target_user._id)) {
-      source_user.friends.pull(target_user._id);
-      source_user.save().then(() => {
-        res.json({result: 'success', data: `${source_id} -> ${target_id}`});
+    if (source_user.friendsRequest.includes(target_user._id)) {
+      source_user.friendsRequest.pull(target_user._id);
+      source_user.friends.push(target_user._id);
+      target_user.friends.push(source_user._id);
+      target_user.save().then(() => {
+        source_user.save().then(() => {
+          res.json({result: 'success', data: `${source_id} -> ${target_id}`});
+        });
+        // TODO : 신청했던 사람에게 알림기능으로 알리기
       });
-      // TODO : 신청했던 사람에게 알림기능으로 알리기
     } else {
       res.json({result: 'fail', data: `no request from ${target_id}`});
     }
@@ -30,18 +34,18 @@ router.post('/accept/:id', function (req, res, next) {
 
 router.post('/request/:id', function (req, res, next) {
   const target_id = req.params.id;
-  const source_id = req.body.token;
+  const source_id = req.query.token;
 
   Promise.all([
-    User.findOne({user_id: target_id}).exec(),
-    User.findOne({user_id: source_id}).exec(),
+    User.findOne({userId: target_id}).exec(),
+    User.findOne({userId: source_id}).exec(),
   ]).then(([target_user, source_user]) => {
     if (!target_user || !source_user) {
       next(new Error(`${target_id} or ${source_id} is not valid`));
       return;
     }
-    if (!target_user.friends.includes(source_user._id)) {
-      target_user.friends.push(source_user._id);
+    if (!target_user.friendsRequest.includes(source_user._id)) {
+      target_user.friendsRequest.push(source_user._id);
       target_user
         .save()
         .then(() =>
