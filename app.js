@@ -42,7 +42,7 @@ app.use(function (req, res, next) {
 
 // error handler
 app.use(function (err, req, res, next) {
-  res.status(err.status || 500);
+  res.status(200);
   console.log(err);
   res.json({result: 'fail', data: err.message});
 });
