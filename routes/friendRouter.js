@@ -3,6 +3,12 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 
+router.get('/', async function (req, res, next) {
+  const user = await User.findOne({userId: req.query.token});
+  const friends = await User.find({_id: {$in: user.friends}});
+  res.json({result: 'success', data: friends});
+});
+
 router.post('/accept/:id', function (req, res, next) {
   const target_id = req.params.id;
   const source_id = req.query.token;
