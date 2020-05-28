@@ -4,6 +4,7 @@ const router = express.Router();
 const authRouter = require('./authRouter');
 const userRouter = require('./userRouter');
 const friendRouter = require('./friendRouter');
+const restaurantRouter = require('./restaurantRouter');
 const User = require('../models/User');
 
 router.use('/auth', authRouter);
@@ -25,5 +26,6 @@ router.use(function (req, res, next) {
 
 router.use('/user', userRouter);
 router.use('/friend', friendRouter);
+router.use('/restaurant', restaurantRouter);
 
 module.exports = router;

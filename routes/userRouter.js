@@ -22,6 +22,7 @@ router.get('/:id', function (req, res, next) {
         user = user.toObject();
         user.friendsUser = friendsUser;
         user.friendsRequestUser = friendsRequestUser;
+        // TODO : History 추가해서 반환
         console.log(user);
         res.json({result: 'success', data: user});
       });
