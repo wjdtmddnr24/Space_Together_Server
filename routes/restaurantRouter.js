@@ -14,4 +14,13 @@ router.post('/recommend', async function (req, res, next) {
   res.json({result: 'success', data: restaurants});
 });
 
+router.post('/select/:id', async function (req, res, next) {
+  const users = req.body || [];
+  await new History({
+    meeting: users.map((user) => user._id),
+    restaurantInfo: req.query.id,
+  }).save();
+  res.json({result: 'success', data: 'have a good time'});
+});
+
 module.exports = router;
