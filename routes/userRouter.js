@@ -30,4 +30,24 @@ router.get('/:id', function (req, res, next) {
   );
 });
 
+router.post('/:id', function (req, res, next) {
+  const {id} = req.params;
+  const {timetable} = req.body;
+  User.update(
+    {userId: id},
+    {
+      $set: {
+        timetable,
+      },
+    },
+    function (err) {
+      if (err) {
+        next(err);
+        return;
+      }
+      res.json({result: 'success', data: 'success'});
+    }
+  );
+});
+
 module.exports = router;
