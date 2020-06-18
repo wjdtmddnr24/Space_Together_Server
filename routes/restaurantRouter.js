@@ -10,22 +10,23 @@ users : 사용자 _id들
 */
 router.post('/recommend', async function (req, res, next) {
   const users = req.body || [];
-  console.log(req.body);
   const restaurants = [];
   let prefer = [];
-  for (const userId of users) {
-    const user = await User.findOne({_id: userId});
-    prefer.length = user.prefer.length;
-    for (let i = 0; i < user.prefer.length; i++) {
-      prefer[i] = user.prefer[i] + (prefer[i] || 0);
-    }
+  for (let i = 0; i < 84; i++) prefer[i] = 0;
+  const visitedHistories = await History.find({meeting: {$in: users}}).sort({
+    vistedAt: 1,
+  });
+  let weight = 1;
+  for (const history of visitedHistories) {
+    const restaurant = await Restaurant.findOne({_id: history.restaurantInfo});
+    prefer[restaurant.id] = prefer[restaurant.id]
+      ? prefer[restaurant.id] + weight
+      : weight;
+    weight++;
   }
-  prefer = prefer
-    .map((v, i) => {
-      return {v: v, i: i};
-    })
-    .sort((a, b) => b.v - a.v);
+  prefer = prefer.map((v, i) => ({v: v, i: i})).sort((a, b) => b.v - a.v);
   for (const p of prefer) {
+    if (!p) continue;
     const restaurant = await Restaurant.findOne({id: p.i});
     if (!restaurant) continue;
     restaurants.push(restaurant);
