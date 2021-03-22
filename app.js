@@ -16,7 +16,7 @@ db.once('open', function () {
   console.log('Connected to DB');
 });
 
-mongoose.connect('mongodb://odyssey:odyssey2020!@115.68.221.40:27017', {
+mongoose.connect('mongodb://odyssey:odyssey2020!@'+process.env:mongodb +':27017', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false,
